@@ -26,7 +26,7 @@ export function useCompletions(date: string) {
   }, [supabase, date]);
 
   useEffect(() => {
-    fetchCompletions();
+    void fetchCompletions();
   }, [fetchCompletions]);
 
   const toggleCompletion = async (habitId: string) => {
@@ -38,11 +38,9 @@ export function useCompletions(date: string) {
     const existing = completions.find((c) => c.habit_id === habitId);
 
     if (existing) {
-      // Remove completion
       await supabase.from("completions").delete().eq("id", existing.id);
       setCompletions((prev) => prev.filter((c) => c.id !== existing.id));
     } else {
-      // Add completion
       const { data } = await supabase
         .from("completions")
         .insert({

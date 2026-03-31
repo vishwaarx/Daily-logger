@@ -90,7 +90,6 @@ export function useLeaderboard() {
   const supabase = createClient();
 
   const fetchLeaderboard = useCallback(async () => {
-    // Fetch all profiles
     const { data: profiles } = await supabase
       .from("profiles")
       .select("*")
@@ -101,14 +100,12 @@ export function useLeaderboard() {
       return;
     }
 
-    // Fetch all public habits
     const { data: habits } = await supabase
       .from("habits")
       .select("*")
       .eq("is_public", true)
       .eq("is_active", true);
 
-    // Fetch completions for public habits (last 30 days)
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
 
@@ -124,7 +121,6 @@ export function useLeaderboard() {
       completions = data ?? [];
     }
 
-    // Build leaderboard
     const leaderboard: LeaderboardEntry[] = (profiles as Profile[]).map((profile) => {
       const userHabits = (habits ?? []).filter((h: Habit) => h.user_id === profile.id);
       const userCompletions = completions.filter((c) => c.user_id === profile.id);
@@ -138,7 +134,6 @@ export function useLeaderboard() {
       };
     });
 
-    // Sort and rank
     leaderboard.sort((a, b) => b.consistencyScore - a.consistencyScore);
     leaderboard.forEach((entry, i) => {
       entry.rank = i + 1;
@@ -149,7 +144,7 @@ export function useLeaderboard() {
   }, [supabase]);
 
   useEffect(() => {
-    fetchLeaderboard();
+    void fetchLeaderboard();
   }, [fetchLeaderboard]);
 
   return { entries, loading, refetch: fetchLeaderboard };

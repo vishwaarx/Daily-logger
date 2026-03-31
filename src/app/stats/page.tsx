@@ -38,7 +38,7 @@ export default function StatsPage() {
   }, [supabase]);
 
   useEffect(() => {
-    fetchCompletions();
+    void fetchCompletions();
   }, [fetchCompletions]);
 
   // Calculate week start (Sunday)

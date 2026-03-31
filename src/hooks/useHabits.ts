@@ -26,7 +26,7 @@ export function useHabits() {
   }, [supabase]);
 
   useEffect(() => {
-    fetchHabits();
+    void fetchHabits();
   }, [fetchHabits]);
 
   const createHabit = async (habit: {

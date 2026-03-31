@@ -55,7 +55,6 @@ export default function ArenaProfilePage({
   const supabase = createClient();
 
   const fetchData = useCallback(async () => {
-    // Fetch profile
     const { data: prof } = await supabase
       .from("profiles")
       .select("*")
@@ -64,7 +63,6 @@ export default function ArenaProfilePage({
 
     setProfile(prof);
 
-    // Fetch public habits
     const { data: hab } = await supabase
       .from("habits")
       .select("*")
@@ -75,7 +73,6 @@ export default function ArenaProfilePage({
 
     setHabits(hab ?? []);
 
-    // Fetch completions for public habits
     if (hab && hab.length > 0) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 90);
@@ -96,7 +93,7 @@ export default function ArenaProfilePage({
   }, [supabase, userId]);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
   if (loading) {

@@ -26,7 +26,6 @@ export function useStreak(habits: Habit[]) {
       return;
     }
 
-    // Fetch last 120 days of completions for all habits
     const today = new Date();
     const startDate = new Date(today);
     startDate.setDate(startDate.getDate() - 120);
@@ -40,7 +39,6 @@ export function useStreak(habits: Habit[]) {
       .gte("completed_date", formatDate(startDate))
       .lte("completed_date", formatDate(today));
 
-    // Build a set of completed dates per habit
     const completionSets: Record<string, Set<string>> = {};
     for (const c of completions ?? []) {
       if (!completionSets[c.habit_id]) {
@@ -49,7 +47,6 @@ export function useStreak(habits: Habit[]) {
       completionSets[c.habit_id].add(c.completed_date);
     }
 
-    // Calculate streaks
     const newStreaks: Record<string, number> = {};
 
     for (const habit of habits) {
@@ -57,10 +54,8 @@ export function useStreak(habits: Habit[]) {
       let streak = 0;
       const date = new Date(today);
 
-      // Walk backwards from today
       for (let i = 0; i < 120; i++) {
         if (!isScheduledDay(habit, date)) {
-          // Skip non-scheduled days
           date.setDate(date.getDate() - 1);
           continue;
         }
@@ -70,7 +65,6 @@ export function useStreak(habits: Habit[]) {
           streak++;
           date.setDate(date.getDate() - 1);
         } else {
-          // Today is special: if today is scheduled but not yet completed, don't break streak
           if (i === 0 && formatDate(date) === formatDate(today)) {
             date.setDate(date.getDate() - 1);
             continue;
@@ -87,7 +81,7 @@ export function useStreak(habits: Habit[]) {
   }, [habits, supabase]);
 
   useEffect(() => {
-    calculateStreaks();
+    void calculateStreaks();
   }, [calculateStreaks]);
 
   return { streaks, loading, recalculate: calculateStreaks };
